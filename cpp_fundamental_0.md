@@ -60,6 +60,44 @@ template <typename T>
 inline T SQUARE(T x) { return x*x; }
 ```
 
+# 이름공간
+
+- 범위 지정 연산자(scope resolution operator) '::'를 사용해서 이름공간에 접근한다.
+- 범위 지정 연산자는 전역 변수를 명시적으로 표현할 때도 사용할 수 있다.
+- 이름공간은 둘 이상의 역역으로 나뉘어서 선언할 수도 있다.
+- 동일한 이름공간에 정의된 함수를 호출할 때에는 이름공간을 명시할 필요가 없다.
+
+```cpp
+namespace Test1
+{
+    void Foo(void);
+}
+
+namespace Test1
+{
+    void Bar(void);
+}
+
+namespace Test2
+{
+    void Koo(void);
+}
+
+void Test1::Foo(void)
+{
+    Bar();
+    Test2::Koo();
+}
+```
+
+- using을 이용한 이름공간의 명시: 스코프 내에 존재하면 선언된 이후부터 효력 발생하고 스코프 벗어나면 효력 사라짐. 소스코드 전체에 대해 적용하고자 하면 함수 바깥에 선언해야 함.
+- 이름공간이 과도하게 중첩된 경우 별칭을 활용 가능
+
+```cpp
+namespace ABC=AAA::BBB::CCC;
+```
+
+
 # Reference
 
 - 윤성우, <열혈 C++ 프로그래밍>
