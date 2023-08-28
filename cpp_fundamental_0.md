@@ -130,21 +130,119 @@ int &ref = NULL;  (X)
 ```
 
 - 배열요소는 변수로 간주되어 참조자의 선언이 가능하다.
-- 포인터 변수도 변수이기 때문에 참조자의 선언이 가능하다.
 
 ```cpp
 int arr[3] = { 1, 3, 5 };
 int &ref1 = arr[0];
 int &ref2 = arr[1];
 int &ref3 = arr[2];
+```
 
+- 포인터 변수도 변수이기 때문에 참조자의 선언이 가능하다.
+
+```cpp
 int num = 12;
 int *ptr = &num;
 int **dptr = &ptr;
 
 int &ref = num;
-int *(&pref) = prt;
+int *(&pref) = ptr;
 int **(&dpref) = dptr;
+```
+
+- Call-by-value: 값을 인자로 전달하는 함수의 호출방식
+- Call-by-reference: 주소 값을 인자로 전달하는 함수의 호출방식. 더 정확히는 주소 값을 전달 받아서, 함수 외부에 선언된 변수에 접근하는 형태의 함수호출
+
+- C와 달리 C++에서는 아래와 같은 코드에서 어떤 값이 호출될지 알 수 없다. 그 이유는 함수 인자가 참조자로 선언된 경우 함수 내부에서 외부에 선언된 변수의 값을 변경할 수 있기 때문이다. 따라서 함수 내에서 값의 변경이 발생하지 않는다면 참조자를 const로 선언하는 방식으로 이를 보완할 수 있다.
+```cpp
+int num = 24;
+HappyFunc(num);
+std::cout<<num<<endl;
+```
+
+- 함수의 반환형이 참조형일 수 있다. 그리고 참조자를 반환하지만 반환형은 참조형이 아닐 수 있다.
+```cpp
+// ref는 지역변수와 동일한 성격을 갖기에 함수가 반환하면 참조자 ref는 소멸되지만 참조자가 참조하는 변수는 소멸되지 않는다.
+int & RefRetFuncOne(int &ref)
+{
+    ref++;
+    return ref;
+}
+
+int RefRetFuncTwo(int &ref)
+{
+    ref++;
+    return ref;
+}
+
+int main(void)
+{
+    int num1 = 1;
+    int &num2 = RefRetFuncOne(num1);
+
+    num1++;
+    num2++;
+    std::cout<<"num1: "<<num1<<endl;  // 4
+    std::cout<<"num2: "<<num2<<endl;  // 4
+
+    // 참조형으로 반환되지만 참조자가 아닌 일반변수를 선언해서 반환 값을 저장할 수 있다.
+    int num3 = RefRetFuncOne(num1);
+
+    num1 += 1;
+    num3 += 100;
+    std::cout<<"num1: "<<num1<<endl;  // 6
+    std::cout<<"num3: "<<num3<<endl;  // 105
+
+    int num4=RefRetFuncTwo(num1);
+
+    num1 += 1;
+    num4 += 100;
+    std::cout<<"num1: "<<num1<<endl;  // 8
+    std::cout<<"num4: "<<num4<<endl;  // 107
+
+    return 0;
+}
+```
+
+- 반환형이 참조형인 함수의 반환 값은 아래와 같이 두 가지 형태로 저장할 수 있다.
+
+```cpp
+int num2 = RefRetFuncOne(num1);
+int &num2 = RefRetFuncOne(num1);
+```
+
+- 반환형이 기본자료형으로 선언된 함수의 반환 값은 반드시 변수에 저장해야 한다. 반환 값은 상수와 다름없기 때문이다.
+
+```cpp
+int num2 = RefRetFuncTwo(num1);   // O
+int &num2 = RefRetFuncTwo(num1);  // X
+```
+
+- const 참조자와 상수화된 변수
+
+```cpp
+const int num = 20;
+// int & ref = num;     // X, 컴파일 에러
+const int & ref = num;  // O
+```
+
+- const 참조자는 상수도 참조 가능하다.
+- 리터럴 상수는 임시적으로 존재하는 값이며 다음 행으로 넘어가면 존재하지 않는 상수다. C++에서는 상수를 참조할 수 있도록 const 참조자를 이용해서 상수를 참조할 때 임시변수라는 것을 만들고 이 장소에 상수를 저장하고나서 참조자가 이를 참고하게끔 한다. 임시로 생성한 변수를 상수화하여 이를 참조자가 참조하게끔 하는 구조이니, 결과적으로는 상수화된 변수를 참조하는 형태가 된다.
+
+```cpp
+const int &ref = 50;
+
+int Adder(const int &num1, const int &num2)
+{
+    return num1 + num2;
+}
+```
+
+- new 연산자를 이용해서 힙에 할당된 메모리 공간에도 참조자의 선언이 가능하다.
+
+```cpp
+int * ptr = new int;
+int & ref = *ptr;
 ```
 
 ## Reference
