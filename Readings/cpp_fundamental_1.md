@@ -181,6 +181,32 @@ public:
         hp = monster.GetHp();  // 컴파일 에러: const 참조자를 대상으로 값의 변경 능력을 가진 함수의 호출을 허용하지 않는다. 에러를 해결하려면 Monster::GetHp() 함수를 const 함수로 선언해야 한다.
     }
 ``` 
+- 사용자가 생성자, 소멸자를 정의하지 않는 경우 디폴트 생성자, 디폴트 소멸자가 자동으로 삽입된다.
+```cpp
+Monster* pMonster = new Monster;    // O
+Monster* pMonster = new Monster();  // O
+Monster monster;                    // O
+Monster monster();                  // X, 컴파일 에러: 함수의 원형 선언과 구분되지 않으므로 허용하지 않는다.
+
+int main(void)
+{
+    Monster monster();  // 함수의 원형은 지역적으로도 선언할 수 있다.
+    Monster m = monster();
+}
+
+Monster monster()
+{
+    Monster monster;
+    return mosnter;
+}
+```
+- 객체의 생성과정
+1. 메모리 공간의 할당
+2. 이니셜라이저를 이용한 멤버 변수 초기화
+3. 생성자의 몸체부분 실행
+- 생성자 몸체에서 멤버 변수를 초기화하는 방법 대비 Member initializer의 이점은 아래와 같다.
+1. 초기화의 대상을 명확히 인식할 수 있다.
+2. 성능에 약간의 이점이 있다. 선언과 동시에 초기화가 이뤄지는 형태로 바이너리 코드가 생성되기 때문이다. 참고로 이를 이용해서 상수화된 변수나 참조자를 클래스의 멤버 변수로 선언 및 초기화할 수 있다.
 
 
 ## Reference
