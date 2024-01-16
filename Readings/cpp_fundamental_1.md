@@ -40,7 +40,7 @@ inline void Monster::Attack() { }
 
 # 클래스
 
-- 클래스와 구조체의 접근제어 지시자
+- 클래스와 구조체의 디폴트 접근제어 지시자는 각각 private, public이다.
 ```cpp
 struct Monster
 {
@@ -97,6 +97,90 @@ int main(void)
     return 0;
 }
 ```
+
+- 클래스의 선언과 정의를 각각 별도의 소스파일로 구분한다.
+```cpp
+// Monster.h 헤더파일에 클래스를 선언한다.
+class Monster
+{
+private:
+    char name[10];
+    int  hp;
+    int  mp;
+public:
+    void Attack();
+    void Heal();
+    void ShowInfo();
+};
+
+// 인라인 함수는 컴파일 과정에서 함수의 호출부를 함수의 몸체로 대체해야 하므로 헤더파일에 정의돼야 한다.
+// 컴파일러는 파일 단위로 컴파일하므로 A.cpp, B.cpp를 동시에 컴파일해서 하나의 실행파일을 만든다 해도 A.cpp의 컴파일 과정에서 B.cpp를 참조하지 않으며 그 반대도 마찬가지다.
+inline Monster::ShowInfo()
+{
+    std::cout << name << ", " << hp << ", " << mp << std::endl;
+}
+
+// Monster에서 제한적으로 사용되는 상수는 헤더파일에 선언한다.
+namespace MONSTER_CONST
+{
+    enum
+    {
+        STRENGTH = 100, SPEED = 50
+    };
+}
+
+// Monster.cpp 소스파일에 클래스를 정의힌다.
+#include "Monster.h"  // 멤버함수의 정의 부분을 컴파일할 때 클래스의 멤버 변수나 헤더파일에 선언된 상수 등의 정보가 필요하다.
+
+void Monster::Attack()
+{
+    std::cout << "Attack" << std::endl;
+}
+void Monster::Heal()
+{
+    std::cout << "Heal" << std::endl;
+}
+
+```
+- 객체를 이루는 것은 데이터와 기능이다. 객체는 하나 이상의 상태 정보(데이터)와 하나 이상의 행동(기능)으로 구성된다.
+- const 변수는 선언과 동시에 초기화돼야 한다.
+```cpp
+class Monster
+{
+    //const int MAX_HP = 10;  // X, 컴파일 에러: 클래스의 멤버 변수 선언문에서는 초기화를 허용하지 않는다.
+    const int MAX_HP;
+public:
+    Monster(int maxHp) : MAX_HP(maxHp) { }  // Member initializer는 선언(메모리 할당)과 동시에 초기화가 수행되므로 상수화된 멤버 변수를 초기화할 수 있다. 
+};
+```
+- const 함수 내에서는 멤버 변수의 값을 변경할 수 없다.
+```cpp
+class Monster
+{
+private:
+    int hp;
+public:
+    int GetHp()
+    {
+        return hp;
+    }
+
+    void ShowHp() const
+    {
+        std::cout << "Hp: " << GetHp() << std::endl;  // 컴파일 에러: const 함수 내에서는 const가 아닌 함수의 호출이 제한된다. 
+    }
+};
+
+class Item
+{
+private:
+    int hp;
+public:
+    void SetHp(const Monster& monster)
+    {
+        hp = monster.GetHp();  // 컴파일 에러: const 참조자를 대상으로 값의 변경 능력을 가진 함수의 호출을 허용하지 않는다. 에러를 해결하려면 Monster::GetHp() 함수를 const 함수로 선언해야 한다.
+    }
+``` 
 
 
 ## Reference
