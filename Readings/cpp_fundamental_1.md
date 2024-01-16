@@ -4,6 +4,9 @@
 - C++에서는 구조체 내에 함수를 선언할 수 있게 허용하기 때문에 특정 구조체에 종속적인 함수들을 모아놓을 수 있다.
 - 특정 구조체 객체가 여러 개 생성되더라도 모든 객체는 하나의 함수를 공유한다.
 - 구조체 내에서만 유효한 상수는 enum을 이용해서 정의할 수 있다. 몇몇 구조체들 사이에서만 사용되는 상수들을 선언할 때는 이름공간을 이용해서 상수가 사용되는 영역을 명시하는 방법도 있다.
+
+<details><summary>ex</summary>
+    
 ```cpp
 struct Monster
 {
@@ -33,14 +36,25 @@ int main(void)
     return 0;
 }
 ```
+
+</details>
+
 - 구조체 안에 함수가 정의되어 있으면 인라인으로 처리하라는 의미가 내포되어 있다. 따라서 함수를 구조체 밖으로 빼내는 경우 인라인으로 처리하라는 의미가 사라진다. 인라인을 유지하려면 명시적으로 inline 키워드를 추가해야 한다.
+
+<details><summary>ex</summary>
+    
 ```cpp
 inline void Monster::Attack() { }
 ```
 
+</details>
+
 # 클래스
 
 - 클래스와 구조체의 디폴트 접근제어 지시자는 각각 private, public이다.
+
+<details><summary>ex</summary>
+
 ```cpp
 struct Monster
 {
@@ -98,7 +112,12 @@ int main(void)
 }
 ```
 
+</details>
+
 - 클래스의 선언과 정의를 각각 별도의 소스파일로 구분한다.
+
+<details><summary>ex</summary>
+
 ```cpp
 // Monster.h 헤더파일에 클래스를 선언한다.
 class Monster
@@ -140,10 +159,15 @@ void Monster::Heal()
 {
     std::cout << "Heal" << std::endl;
 }
-
 ```
+
+</details>
+
 - 객체를 이루는 것은 데이터와 기능이다. 객체는 하나 이상의 상태 정보(데이터)와 하나 이상의 행동(기능)으로 구성된다.
 - const 변수는 선언과 동시에 초기화돼야 한다.
+
+<details><summary>ex</summary>
+
 ```cpp
 class Monster
 {
@@ -153,7 +177,13 @@ public:
     Monster(int maxHp) : MAX_HP(maxHp) { }  // Member initializer는 선언(메모리 할당)과 동시에 초기화가 수행되므로 상수화된 멤버 변수를 초기화할 수 있다. 
 };
 ```
+
+</details>
+
 - const 함수 내에서는 멤버 변수의 값을 변경할 수 없다.
+
+<details><summary>ex</summary>
+
 ```cpp
 class Monster
 {
@@ -181,9 +211,15 @@ public:
         hp = monster.GetHp();  // 컴파일 에러: const 참조자를 대상으로 값의 변경 능력을 가진 함수의 호출을 허용하지 않는다. 에러를 해결하려면 Monster::GetHp() 함수를 const 함수로 선언해야 한다.
     }
 ```
+
+</details>
+
 - malloc() 함수는 클래스의 크기 정보만 바이트 단위로 전달하기 때문에 당연하게도 생성자를 호출하지 않는다.
 - 객체의 생성 방법을 제한하고자 하는 경우 private 생성자 사용을 고려해볼 수 있다.
 - 사용자가 생성자, 소멸자를 정의하지 않는 경우 디폴트 생성자, 디폴트 소멸자가 자동으로 삽입된다.
+
+<details><summary>ex</summary>
+
 ```cpp
 Monster* pMonster = new Monster;    // O
 Monster* pMonster = new Monster();  // O
@@ -202,6 +238,9 @@ Monster monster()
     return mosnter;
 }
 ```
+
+</details>
+
 - 객체의 생성과정
 1. 메모리 공간의 할당
 2. 이니셜라이저를 이용한 멤버 변수 초기화
