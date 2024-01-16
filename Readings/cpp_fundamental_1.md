@@ -1,8 +1,11 @@
 # 구조체
 
 - 구조체는 연관 있는 데이터를 묶을 수 있는 문법적 장치이다.
+
 - C++에서는 구조체 내에 함수를 선언할 수 있게 허용하기 때문에 특정 구조체에 종속적인 함수들을 모아놓을 수 있다.
+
 - 특정 구조체 객체가 여러 개 생성되더라도 모든 객체는 하나의 함수를 공유한다.
+
 - 구조체 내에서만 유효한 상수는 enum을 이용해서 정의할 수 있다. 몇몇 구조체들 사이에서만 사용되는 상수들을 선언할 때는 이름공간을 이용해서 상수가 사용되는 영역을 명시하는 방법도 있다.
 
 <details><summary>ex</summary>
@@ -164,6 +167,7 @@ void Monster::Heal()
 </details>
 
 - 객체를 이루는 것은 데이터와 기능이다. 객체는 하나 이상의 상태 정보(데이터)와 하나 이상의 행동(기능)으로 구성된다.
+
 - const 변수는 선언과 동시에 초기화돼야 한다.
 
 <details><summary>ex</summary>
@@ -215,7 +219,9 @@ public:
 </details>
 
 - malloc() 함수는 클래스의 크기 정보만 바이트 단위로 전달하기 때문에 당연하게도 생성자를 호출하지 않는다.
+
 - 객체의 생성 방법을 제한하고자 하는 경우 private 생성자 사용을 고려해볼 수 있다.
+
 - 사용자가 생성자, 소멸자를 정의하지 않는 경우 디폴트 생성자, 디폴트 소멸자가 자동으로 삽입된다.
 
 <details><summary>ex</summary>
@@ -245,10 +251,216 @@ Monster monster()
 1. 메모리 공간의 할당
 2. 이니셜라이저를 이용한 멤버 변수 초기화
 3. 생성자의 몸체부분 실행
+
 - 생성자 몸체에서 멤버 변수를 초기화하는 방법 대비 Member initializer의 이점은 아래와 같다.
 1. 초기화의 대상을 명확히 인식할 수 있다.
 2. 성능에 약간의 이점이 있다. 선언과 동시에 초기화가 이뤄지는 형태로 바이너리 코드가 생성되기 때문이다. 참고로 이를 이용해서 상수화된 변수나 참조자를 클래스의 멤버 변수로 선언 및 초기화할 수 있다.
 
+- this 포인터를 이용해서 self-reference를 반환할 수 있다.
+
+<details><summary>ex</summary>
+
+```cpp
+class SelfRef
+{
+private:
+    int num;
+public:
+    SelfRef(int n) : num(n) { }
+
+    SelfRef& Adder(int n)
+    {
+        num += n;
+        return *this;
+    }
+
+    SelfRef& ShowTwoNumber()
+    {
+        std::cout << num << std::endl;
+        return *this;
+    }
+};
+
+int main(void)
+{
+    SelfRef obj(3);
+    SelfRef &ref = obj.Adder(2);
+
+    obj.ShowTwoNumber();  // 5
+    ref.ShowTwoNumber();  // 5
+
+    ref.Adder(1).ShowTwoNumber().Adder(2).ShowTwoNumber();  // 6  // 8
+    return 0;
+}
+```
+    
+</details>
+
+- C++ 스타일 초기화
+
+<details><summary>ex</summary>
+
+```cpp
+int  num = 20;  // O
+int& ref = num; // O
+int  num(20);   // O
+int& ref(num);  // O
+```
+    
+</details>
+
+- 복사 생성자를 정의하지 않으면 멤버 대 멤버 복사를 수행하는 디폴트 복사 생성자가 자동으로 삽입된다. 참고로 복사 생성자의 매개변수는 무한루프를 막기 위해 반드시 참조형이어야 한다.
+
+<details><summary>ex</summary>
+
+```cpp
+class Foo
+{
+private:
+    int num1;
+    int num2;
+public:
+    Foo(int n) : num1(n1) { num2 = 0; }
+    Foo(int n1, int n2) : num1(n1), num2(n2) { }
+};
+
+int main(void)
+{
+    Foo foo1(10, 20);
+    Foo foo2 = foo1;    // 디폴트 복사 생성자 호출
+    // Foo foo2(foo1);  // 위 코드는 암시적으로 이와 같이 변경된다. 암시적 변환을 막음으로써 코드의 명확성을 높이려면 explicit 키워드를 이용한다.
+    Foo foo3 = 5;       // 전달인자가 하나인 생성자의 경우도 암시적 변환이 발생한다.
+    return 0;
+}
+```
+
+</details>
+
+- 클래스의 멤버 변수가 힙 메모리 공간을 참조하는 경우 디폴트 복사 생성자의 얕은 복사가 문제가 될 수 있다. 이 경우 깊은 복사 방식의 복사 생성자를 정의한다. 
+
+<details><summary>ex</summary>
+
+```cpp
+class Person
+{
+private:
+    char* name;
+    int   age;
+public:
+    Person(char* name, int age) : age(age)
+    {
+        this->name = new char[strlen(name) + 1];
+        strcpy(this->name, name);
+    }
+
+    Person(const Person& copy) : age(copy.age)
+    {
+        name = new char[strlen(copy.name) + 1];
+        strcpy(name, copy.name);
+    }
+
+    ~Person()
+    {
+        delete[] name;
+    }
+```
+    
+</details>
+
+- 복사 생성자 호출 시점(=메모리 할당과 동시에 초기화가 이뤄지는 시점)
+1. 기존에 생성된 객체를 이용해서 새로운 객체를 초기화하는 경우
+2. Call-by-value 방식의 함수호출 과정에서 객체를 인자로 전달하는 경우
+3. 객체를 반환하되, 참조형으로 반환하지 않는 경우. 참고로 함수가 갑을 반환하면, 별도의 메모리 공간이 할당되고 이 공간이 반환 값으로 초기화된다.
+
+- 임시 객체가 생성된 위치에는 임시 객체의 참조 값이 반환된다.
+
+<details><summary>ex1</summary>
+
+```cpp
+#include <iostream>
+
+class Temporary
+{
+private:
+    int num;
+public:
+    Temporary(int n) : num(n)
+    {
+        std::cout << "Create obj: " << num << std::endl;
+    }
+
+    ~Temporary()
+    {
+        std::cout << "Destroy obj: " << num << std::endl;
+    }
+
+    void ShowTempInfo()
+    {
+        std::cout << "Num: " << num << std::endl;
+    }
+};
+
+int main(void)
+{
+    Temporary(100);                         // 임시 객체는 다음 행으로 넘어가면 즉시 소멸된다.
+    std::cout << "************After make" << std::endl;
+
+    Temporary(200).ShowTempInfo();          // 임시 객체는 다음 행으로 넘어가면 즉시 소멸된다.
+    std::cout << "************After make" << std::endl;
+
+    const Temporary &ref = Temporary(300);  // 참조자에 참조되는 임시 객체는 바로 소멸되지 않는다.
+    std::cout << "************After make" << std::endl;
+
+    return 0;
+}
+```
+
+</details>
+
+<details><summary>ex2</summary>
+
+```cpp
+#include <iostream>
+
+class SoSimple
+{
+private:
+    int num;
+public:
+    SoSimple(int n) : num(n)
+    {
+        std::cout << "New obj: " << this << std::endl;
+    }
+
+    SoSimple(const SoSimple& copy) : num(copy.num)
+    {
+        std::cout << "New Copy obj: " << this << std::endl;
+    }
+
+    ~SoSimple()
+    {
+        std::cout << "Destroy obj: " << this << std::endl;
+    }
+};
+
+SoSimple SimpleFuncObj(SoSimple ob)
+{
+    std::cout << "Parm ADR: " << &ob << std::endl;
+}
+
+int main(void)
+{
+    SoSimple obj(7);
+    SimpleFuncObj(obj);
+
+    std::cout << std::endl;
+    SoSimple tempRef = SimpleFuncObj(obj);
+    std::cout << "Return obj " << &tempRef << std::endl;
+    return 0;
+}
+```
+    
+</details>
 
 ## Reference
 
