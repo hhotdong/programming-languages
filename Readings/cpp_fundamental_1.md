@@ -464,7 +464,7 @@ int main(void)
 
 - 상수화된 객체는 const 멤버함수만 호출할 수 있다.
 - 함수의 const 키워드 유무도 함수 오버로딩의 조건에 해당된다.
-<details><summary>ex2</summary>
+<details><summary>ex</summary>
 
 ```cpp
 #include <iostream>
@@ -564,7 +564,7 @@ int main(void)
 
 </details>
 
-<details><summary>ex1</summary>
+<details><summary>ex2</summary>
 
 ```cpp
 (...)
@@ -586,6 +586,115 @@ class Point
 ```
 
 </details>
+
+- C에서의 static
+    - 전역변수에 선언된 static: 선언된 파일 내에서만 참조를 허용한다.
+    - 함수 내에 선언된 static: 한 번만 초기화되고, 지역변수와 달리 함수를 빠져나가도 소멸하지 않는다.
+- C++에서의 static
+    - static 멤버변수: 클래스당 하나씩만 생성된다(=클래스 변수). 객체 생성여부와 상관없이 메모리 공간에 단 하나만 할당되어 공유된다. 
+
+<details><summary>ex1</summary>
+
+```cpp
+class Foo
+{
+private:
+    int n;
+    static int cnt;
+public:
+    static int num;
+    const static int NUM_A = 100;  // const static으로 선언된 멤버변수는 선언과 동시에 초기화할 수 있다. 이에 반해 const 멤버변수의 초기화는 이니셜라이저를 통해야만 한다.
+    mutable int num2;              // mutable 키워드를 통해 const 함수에 대해 예외를 둘 수 있다.
+public:
+    Foo()
+    {
+        cnt++;  // private으로 선언된 클래스 변수는 해당 클래스의 객체들만 접근이 가능하다.
+    }
+
+    static void Bar()
+    {
+        n++;  // 컴파일 에러: static 멤버함수 내에서는 static 멤버변수와 static 멤버함수만 호출할 수 있다.
+    }
+}
+int Foo::cnt = 0;  // 클래스 변수는 객체가 생성될 때 동시에 생성되는 변수가 아니고 이미 메모리 공간에 할당이 이뤄진 변수이기 때문에 생성자 내부가 아니라 클래스 바깥에서 초기화한다. cnt변수는 메모리 공간에 저장될 때 0으로 초기화된다.
+int Foo::num = 0;
+
+int main(void)
+{
+    Foo foo();
+    std::cout << "Class variable(num): " << Foo::num << std::endl;  // public으로 선언된 클래스 변수는 클래스 외부에서 클래스명으로 접근 가능하다.
+    std::cout << "Class variable(num): " << foo::num << std::endl;  // 객체를 통해서도 접근할 수 있으나 이 방식은 멤버변수에 접근하는 것과 같은 오해를 불러일으키기 때문에 가급적 피한다.
+    return 0;
+}
+```
+
+</details>
+
+- 상속
+    - 유도 클래스의 객체생성 과정에서 기초 클래스의 생성자는 100% 호출된다.
+    - 유도 클래스의 생성자에서 기초 클래스의 생성자 호출을 명시하지 않으면, 기초 클래스의 void 생성자가 호출된다.
+    - 유도 클래스의 객체가 소멸될 때에는, 유도 클래스의 소멸자가 호출되고 난 다음에 기초 클래스의 소멸자가 호출된다.
+    - 생성자에서 동적 할당한 메모리 공간은 소멸자에서 해제해야 한다.
+
+<details><summary>ex1</summary>
+
+```cpp
+#include <iostream>
+#include <cstring>
+
+class Person
+{
+private:
+    char* name;
+public:
+    Person(const char* myname)
+    {
+        name = new char[std::strlen(myname) + 1];
+        std::strcpy(name, myname);
+    }
+    ~Person()
+    {
+        delete[] name;
+    }
+    void WhatYourName() const
+    {
+        std::cout << "My name is " << name << std::endl;
+    }
+};
+
+class UnivStudent : public Person
+{
+private:
+    char* major;
+public:
+    UnivStudent(const char* myname, const char* mymajor) : Person(myname)
+    {
+        major = new char[std::strlen(mymajor) + 1];
+        std::strcpy(major, mymajor);
+    }
+    ~UnivStudent()
+    {
+        delete[] major;
+    }
+    void WhoAreYou() const
+    {
+        WhatYourName();
+        std::cout << "My major is " << major << std::endl;
+    }
+};
+
+int main(void)
+{
+    UnivStudent st1("Kim", "Mathmatics");
+    st1.WhoAreYou();
+    UnivStudent st2("Hong", "Physics");
+    st2.WhoAreYou();
+    return 0;
+}
+```
+
+</details>
+
 
 ## Reference
 
