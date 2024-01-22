@@ -630,11 +630,13 @@ int main(void)
 
 </details>
 
-- 상속
+- 상속 관계에서의 생성자, 소멸자
     - 유도 클래스의 객체생성 과정에서 기초 클래스의 생성자는 100% 호출된다.
     - 유도 클래스의 생성자에서 기초 클래스의 생성자 호출을 명시하지 않으면, 기초 클래스의 void 생성자가 호출된다.
     - 유도 클래스의 객체가 소멸될 때에는, 유도 클래스의 소멸자가 호출되고 난 다음에 기초 클래스의 소멸자가 호출된다.
     - 생성자에서 동적 할당한 메모리 공간은 소멸자에서 해제해야 한다.
+- 객체 포인터 변수는 해당 클래스를 직접 혹은 간접적으로 상속하는 모든 객체를 가리킬 수 있다.
+- 상속 관계인 클래스 간에 이름과 시그니처가 동일한 함수를 정의하는 것을 함수 오버라이딩이라고 한다. 함수가 오버라이딩 되면 오버라이딩 된 기초 클래스의 함수는 오버라이딩 한 유도 클래스의 함수에 가려진다.
 
 <details><summary>ex1</summary>
 
@@ -644,7 +646,7 @@ int main(void)
 
 class Person
 {
-private:
+public:
     char* name;
 public:
     Person(const char* myname)
@@ -676,25 +678,134 @@ public:
     {
         delete[] major;
     }
+    void WhatYourName() const
+    {
+        std::cout << "It's " << name << std::endl;
+    }
     void WhoAreYou() const
     {
         WhatYourName();
+        Person::WhatYourName();
         std::cout << "My major is " << major << std::endl;
     }
 };
 
 int main(void)
 {
-    UnivStudent st1("Kim", "Mathmatics");
-    st1.WhoAreYou();
+    Person* st1 = new UnivStudent("Kim", "Mathmatics");
+    st1->WhatYourName();
+    std::cout << "-----------" << std::endl;
     UnivStudent st2("Hong", "Physics");
     st2.WhoAreYou();
+    std::cout << "-----------" << std::endl;
+    st2.Person::WhatYourName();
+
+    delete st1;
     return 0;
 }
 ```
 
 </details>
 
+<details><summary>ex2</summary>
+
+```cpp
+int main(void)
+{
+    Base* bptr = new Derived();
+    bptr->DerivedFunc();             // 컴파일 에러: C++ 컴파일러는 포인터 연산의 가능성 여부를 판단할 때, 포인터의 자료형을 기준으로 판단하지, 실제 가리키는 객체의 자료형을 기준으로 판단하지 않는다.
+    Derived* dptr = bptr;            // 컴파일 에러: 포인터 bptr의 포인터 형만을 가지고 대입의 가능성을 판단한다.
+
+    Derived* dptr2 = new Derived();  // O
+    Base* bptr2 = dptr2;             // O
+    return 0;
+}
+```
+
+</details>
+
+- 가상함수는 포인터의 자료형을 기반으로 호출대상을 결정하지 않고, 포인터 변수가 실제로 가리키는 객체를 참조하여 호출의 대상을 결정한다.
+
+<details><summary>ex</summary>
+
+```cpp
+#include <iostream>
+
+class First
+{
+public:
+    void FirstFunc() { std::cout << "FirstFunc" << std::endl; }
+    void MyFunc() { std::cout << "FirstMyFunc" << std::endl; }
+    virtual void VirtualFunc() { std::cout << "FirstVirtualFunc" << std::endl; }
+};
+
+class Second : public First
+{
+public:
+    void SecondFunc() { std::cout << "SecondFunc" << std::endl; }
+    void MyFunc() { std::cout << "SecondMyFunc" << std::endl; }
+    virtual void VirtualFunc() { std::cout << "SecondVirtualFunc" << std::endl; }  // 오버라이딩 관계인 부모 함수에 virtual 키워드가 있다면 자식 클래스에서는 생략해도 자동으로 가상함수가 되지만 명시적으로 표현하기 위해 virtual 키워드 추가했음.
+};
+
+class Third : public Second
+{
+public:
+    void ThirdFunc() { std::cout << "ThirdFunc" << std::endl; }
+    void MyFunc() { std::cout << "ThirdMyFunc" << std::endl; }
+    virtual void VirtualFunc() { std::cout << "ThirdVirtualFunc" << std::endl; }
+};
+
+int main(void)
+{
+    Third* tptr = new Third();
+    Second* sptr = tptr;
+    First* fptr = sptr;
+
+    tptr->FirstFunc();    // O
+    tptr->SecondFunc();   // O
+    tptr->ThirdFunc();    // O
+
+    sptr->FirstFunc();    // O
+    sptr->SecondFunc();   // O
+    //sptr->ThirdFunc();  // X
+
+    fptr->FirstFunc();    // O
+    //fptr->SecondFunc(); // X
+    //fptr->ThirdFunc();  // X
+
+    std::cout << "--------------------" << std::endl;
+
+    fptr->MyFunc();
+    sptr->MyFunc();
+    tptr->MyFunc();
+    
+    std::cout << "--------------------" << std::endl;
+
+    fptr->VirtualFunc();
+    sptr->VirtualFunc();
+    tptr->VirtualFunc();
+
+    delete tptr;
+    return 0;
+}
+```
+
+</details>
+
+- 순수 가상함수란, 함수의 몸체가 정의되지 않은 함수를 의미한다. 순수 가상함수를 선언한 클래스를 추상 클래스라고 한다.
+    - 추상 클래스로 선언함으로써 잘못된 객체의 생성을 막을 수 있고, 유도 클래스에서의 오버라이드를 위한 더미 함수에 대해 명확하게 의도를 표시할 수 있다.
+
+<details><summary>ex</summary>
+
+```cpp
+class Foo  // 추상 클래스
+{
+protected:
+    virtual void Bar() = 0;  // 순수 가상함수
+}
+```
+
+</details>
 
 ## Reference
 
