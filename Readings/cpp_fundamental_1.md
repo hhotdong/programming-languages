@@ -807,6 +807,55 @@ protected:
 
 </details>
 
+- 가상 소멸자
+
+<details><summary>ex</summary>
+
+```cpp
+#include <iostream>
+
+class First
+{
+private:
+    char* strOne;
+public:
+    First(const char* str)
+    {
+        strOne = new char[std::strlen(str) + 1];
+    }
+    virtual ~First()
+    {
+        std::cout << "~First()" << std::endl;
+        delete[] strOne;
+    }
+};
+
+class Second : public First
+{
+private:
+    char* strTwo;
+public:
+    Second(const char* str1, const char* str2) : First(str1)
+    {
+        strTwo = new char[std::strlen(str2) + 1];
+    }
+    ~Second()
+    {
+        std::cout << "~Second()" << std::endl;
+        delete[] strTwo;
+    }
+};
+
+int main(void)
+{
+    First* ptr = new Second("simple", "complex");
+    delete ptr;  // First 클래스의 소멸자만 호출한다.
+    return 0;
+}
+```
+
+</details>
+
 ## Reference
 
 - 윤성우, <열혈 C++ 프로그래밍>
