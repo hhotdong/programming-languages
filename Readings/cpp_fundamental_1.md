@@ -736,7 +736,7 @@ class First
 public:
     void FirstFunc() { std::cout << "FirstFunc" << std::endl; }
     void MyFunc() { std::cout << "FirstMyFunc" << std::endl; }
-    virtual void VirtualFunc() { std::cout << "FirstVirtualFunc" << std::endl; }
+    virtual void SimpleFunc() { std::cout << "FirstSimpleFunc" << std::endl; }
 };
 
 class Second : public First
@@ -744,7 +744,7 @@ class Second : public First
 public:
     void SecondFunc() { std::cout << "SecondFunc" << std::endl; }
     void MyFunc() { std::cout << "SecondMyFunc" << std::endl; }
-    virtual void VirtualFunc() { std::cout << "SecondVirtualFunc" << std::endl; }  // 오버라이딩 관계인 부모 함수에 virtual 키워드가 있다면 자식 클래스에서는 생략해도 자동으로 가상함수가 되지만 명시적으로 표현하기 위해 virtual 키워드 추가했음.
+    virtual void SimpleFunc() { std::cout << "SecondSimpleFunc" << std::endl; }  // 오버라이딩 관계인 부모 함수에 virtual 키워드가 있다면 자식 클래스에서는 생략해도 자동으로 가상함수가 되지만 명시적으로 표현하기 위해 virtual 키워드 추가했음.
 };
 
 class Third : public Second
@@ -752,7 +752,7 @@ class Third : public Second
 public:
     void ThirdFunc() { std::cout << "ThirdFunc" << std::endl; }
     void MyFunc() { std::cout << "ThirdMyFunc" << std::endl; }
-    virtual void VirtualFunc() { std::cout << "ThirdVirtualFunc" << std::endl; }
+    virtual void SimpleFunc() { std::cout << "ThirdSimpleFunc" << std::endl; }
 };
 
 int main(void)
@@ -781,9 +781,26 @@ int main(void)
     
     std::cout << "--------------------" << std::endl;
 
-    fptr->VirtualFunc();
-    sptr->VirtualFunc();
-    tptr->VirtualFunc();
+    fptr->SimpleFunc();
+    sptr->SimpleFunc();
+    tptr->SimpleFunc();
+
+    std::cout << "--------------------" << std::endl;
+
+    Third obj;
+    obj.FirstFunc();
+    obj.SecondFunc();
+    obj.ThirdFunc();
+    obj.SimpleFunc();
+
+    Second& sref = obj;
+    sref.FirstFunc();
+    sref.SecondFunc();
+    sref.SimpleFunc();
+
+    First& fref = obj;
+    fref.FirstFunc();
+    fref.SimpleFunc();
 
     delete tptr;
     return 0;
