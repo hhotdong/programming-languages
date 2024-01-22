@@ -462,6 +462,131 @@ int main(void)
     
 </details>
 
+- 상수화된 객체는 const 멤버함수만 호출할 수 있다.
+- 함수의 const 키워드 유무도 함수 오버로딩의 조건에 해당된다.
+<details><summary>ex2</summary>
+
+```cpp
+#include <iostream>
+
+class Foo
+{
+private:
+    int num;
+public:
+    Foo(int n) : num(n) { }
+    void Bar()
+    {
+        std::cout << "Bar: " << num << std::endl;
+    }
+
+    void Bar() const
+    {
+        std::cout << "const Bar: " << num << std::endl;
+    }
+};
+
+void TestFunc(const Foo &foo)
+{
+    foo.Bar();
+}
+
+int main(void)
+{
+    Foo foo1(5);
+    const Foo foo2(10);
+
+    foo1.Bar();
+    foo2.Bar();
+
+    TestFunc(foo1);
+    TestFunc(foo2);
+    return 0;
+}
+```
+
+</details>
+
+- friend 선언
+    - 클래스 내부에서 다른 클래스, 전역함수, 멤버함수 등에 대해 friend를 선언하면 private 멤버에 대한 접근이 가능해진다.
+    - friend 선언은 private, public 영역 상관없이 클래스 내부에만 선언되면 된다.
+
+<details><summary>ex1</summary>
+
+```cpp
+#include <iostream>
+#include <cstring>
+
+class Girl;  // Girl이라는 이름이 클래스의 이름임을 알림.
+
+class Boy
+{
+private:
+    int height;
+    friend class Girl;  // Girl 클래스에 대한 friend 선언. Girl이라는 클래스에 대한 선언도 포함하므로 5번째 줄의 클래스 선언은 생략할 수 있다.
+public:
+    Boy(int len) : height(len) { }
+    void ShowYourFriendInfo(Girl &frn);
+};
+
+class Girl
+{
+private:
+    char phNum[20];
+public:
+    Girl(const char* num)
+    {
+        std::strcpy(phNum, num);
+    }
+    void ShowYourFriendInfo(Boy& frn);
+    friend class Boy;  // Boy 클래스에 대한 friend 선언
+};
+
+void Boy::ShowYourFriendInfo(Girl& frn)  // Girl 클래스에 멤버변수 phNum이 존재한다는 사실을 알아야하기 때문에 Girl 클래스 정의보다 뒤에 위치함.
+{
+    std::cout << "Her phone number: " << frn.phNum << std::endl;
+}
+
+void Girl::ShowYourFriendInfo(Boy& frn)
+{
+    std::cout << "His height: " << frn.height << std::endl;
+}
+
+int main(void)
+{
+    Boy boy(170);
+    Girl girl("010-1234-5678");
+    boy.ShowYourFriendInfo(girl);
+    girl.ShowYourFriendInfo(boy);
+    return 0;
+}
+```
+
+</details>
+
+<details><summary>ex1</summary>
+
+```cpp
+(...)
+class Point;
+
+class PointOP
+{
+    (...)
+    Point PointAdd(const Point&, const Point&);
+    (...)
+}
+
+class Point
+{
+    (...)
+    friend Point PointOP::PointAdd(const Point&, const Point&);  // 멤버함수에 대한 friend 선언.
+    friend void ShowPointPos(const Point&);                      // friend 선언과 함수 원형에 대한 선언이 동시에 이뤄진다.
+    (...)
+```
+
+</details>
+
 ## Reference
 
 - 윤성우, <열혈 C++ 프로그래밍>
