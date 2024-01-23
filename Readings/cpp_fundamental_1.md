@@ -914,7 +914,7 @@ int main(void)
 
 </details>
 
-<details><summary>ex1</summary>
+<details><summary>ex2</summary>
 
 ```cpp
 #include <iostream>
