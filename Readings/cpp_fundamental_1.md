@@ -454,7 +454,7 @@ int main(void)
     SimpleFuncObj(obj);
 
     std::cout << std::endl;
-    SoSimple tempRef = SimpleFuncObj(obj);
+    SoSimple tempRef = SimpleFuncObj(obj);  // 반환되는 임시 객체에 tempRef라는 이름을 할당하게 된다. 객체 생성 수를 줄여 효율성을 높이려는 목적.
     std::cout << "Return obj " << &tempRef << std::endl;
     return 0;
 }
