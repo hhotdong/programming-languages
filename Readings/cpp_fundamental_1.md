@@ -875,6 +875,102 @@ int main(void)
 
 - 한 개 이상의 가상함수를 포함하는 클래스에 대해서는 컴파일러가 가상함수 테이블(virtual table, V-table)을 만든다. V-table에는 함수를 구분지어주는 구분자 key와 구분자에 해당하는 함수의 주소정보를 알려주는 value가 있다. 오버라이딩 된 가상함수의 주소정보는 유도 클래스의 가상함수 테이블에 포함되지 않는다. 따라서 오버라이딩 된 가상함수를 호출하면, 무조건 가장 마지막에 오버라이딩을 한 유도 클래스의 멤버함수가 호출된다.
 - 가상함수 테이블은 멤버함수 호출에 사용되는 일종의 데이터이기 때문에 객체의 생성과 상관없이 main() 함수가 호출되기 이전에 메모리 공간에 할당된다.
+- 다중상속의 모호성: 다중상속의 대상이 되는 두 기초 클래스에 동일한 이름의 멤버가 존재하는 경우 문제가 발생할 수 있다.
+
+<details><summary>ex1</summary>
+
+```cpp
+#include <iostream>
+
+class BaseOne
+{
+public:
+    void SimpleFunc() { std::cout << "BaseOne" << std::endl; }
+};
+
+class BaseTwo
+{
+public:
+    void SimpleFunc() { std::cout << "BaseTwo" << std::endl; }
+};
+
+class MultiDerived : public BaseOne, protected BaseTwo
+{
+public:
+    void ComplexFunc()
+    {
+        BaseOne::SimpleFunc();  // 어느 클래스에 정의된 함수를 호출할 것인지 명시해야 한다.
+        BaseTwo::SimpleFunc();
+    }
+};
+
+int main(void)
+{
+    MultiDerived mdr;
+    mdr.ComplexFunc();
+    return 0;
+} 
+```
+
+</details>
+
+<details><summary>ex1</summary>
+
+```cpp
+#include <iostream>
+
+class Base
+{
+public:
+    Base() { std::cout << "Base ctor" << std::endl; }
+    void SimpleFunc() { std::cout << "BaseOne" << std::endl; }
+};
+
+class MiddleDerivedOne : virtual public Base
+{
+public:
+    MiddleDerivedOne() : Base() { std::cout << "MiddleDerivedOne ctor" << std::endl; }
+    void MiddleFuncOne()
+    {
+        SimpleFunc();
+        std::cout << "MiddleDerivedOne" << std::endl;
+    }
+};
+
+class MiddleDerivedTwo : virtual public Base
+{
+public:
+    MiddleDerivedTwo() : Base() { std::cout << "MiddleDerivedTwo ctor" << std::endl; }
+    void MiddleFuncTwo()
+    {
+        SimpleFunc();
+        std::cout << "MiddleDerivedTwo" << std::endl;
+    }
+};
+
+class LastDerived : public MiddleDerivedOne, public MiddleDerivedTwo
+{
+public:
+    LastDerived() : MiddleDerivedOne(), MiddleDerivedTwo() { std::cout << "LastDerived ctor" << std::endl; }
+    void ComplexFunc()
+    {
+        MiddleFuncOne();
+        MiddleFuncTwo();
+        SimpleFunc();  // 가상상속이 아니었다면 MiddleDerivedOne::SimpleFunc() 또는 MiddleDerivedTwo::SimpleFunc()으로 명시했어야 하며 Base클래스의 생성자도 두 번 호출된다.
+    }
+};
+
+int main(void)
+{
+    std::cout << "객체 생성 전....." << std::endl;
+    LastDerived ldr;
+    std::cout << "객체 생성 후....." << std::endl;
+    ldr.ComplexFunc();
+    return 0;
+}
+```
+
+</details>
 
 ## Reference
 
