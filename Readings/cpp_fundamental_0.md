@@ -141,9 +141,9 @@ int &num2 = num1;
 int &num3 = num1;
 int &num4 = num1;
 
-int &num2=num1;
-int &num3=num2;
-int &num4=num3;
+int &num2 = num1;
+int &num3 = num2;
+int &num4 = num3;
 ```
 
 </details>
