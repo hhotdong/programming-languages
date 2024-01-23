@@ -446,6 +446,7 @@ public:
 SoSimple SimpleFuncObj(SoSimple ob)
 {
     std::cout << "Parm ADR: " << &ob << std::endl;
+    return ob;
 }
 
 int main(void)
