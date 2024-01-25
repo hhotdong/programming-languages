@@ -9,7 +9,7 @@
   - 멤버함수로 오버로딩한 경우 => pos.operator++()
   - 전역함수로 오버로딩한 경우 => operator++(pos)
 
-<details><summary>ex2</summary>
+<details><summary>ex</summary>
 
 ```cpp
 #include <iostream>
