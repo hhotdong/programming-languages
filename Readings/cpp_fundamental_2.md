@@ -832,6 +832,51 @@ int main(void)
 
 </details>
 
+- () 연산자의 오버로딩과 Functor
+
+<details><summary>ex</summary>
+
+```cpp
+#include <iostream>
+
+class Point
+{
+private:
+    int xpos, ypos;
+public:
+    Point(int x = 0, int y = 0) : xpos(x), ypos(y) { std::cout << "Point 객체 생성" << std::endl; }
+    Point operator+(const Point& pos) const { return Point(xpos + pos.xpos, ypos + pos.ypos); }  // 임시객체를 생성함과 동시에 반환하고 있다. 이처럼 return문에서도 임시객체를 생성과 동시에 반환할 수 있다.
+    friend std::ostream& operator<<(std::ostream& os, const Point& pos);
+};
+
+std::ostream& operator<<(std::ostream& os, const Point& pos)
+{
+    os << '[' << pos.xpos << ", " << pos.ypos << ']' << std::endl;
+    return os;
+}
+
+class Adder
+{
+public:
+    int operator()(const int& n1, const int& n2) { return n1 + n2; }
+    double operator()(const double& e1, const double& e2) { return e1 + e2; }
+    Point operator()(const Point& pos1, const Point& pos2) { return pos1 + pos2; }
+};
+
+int main(void)
+{
+    Adder adder;
+
+    // adder는 객체임에도 함수처럼 동작한다.
+    std::cout << adder(1,3) << std::endl;
+    std::cout << adder(1.5,3.7) << std::endl;
+    std::cout << adder(Point(3,4), Point(7,9));  // Point형 임시객체를 두 개 생성해서 함수의 인자로 전달하고 있다. 이렇듯 함수의 호출문에서도 임시객체를 생성할 수 있다.
+    return 0;
+}
+```
+
+</details>
+
 ## Reference
 
 - 윤성우, <열혈 C++ 프로그래밍>
