@@ -455,6 +455,7 @@ public:
         arr = new int[len];
     }
 
+    // 반환형이 참조형이므로 배열요소의 참조값이 반환되고, 이 값을 이용해서 배열요소에 저장된 값의 참조 뿐만 아니라 변경도 가능하다.
     int& operator[](int idx)
     {
         if (idx < 0 || idx >= arrlen)
