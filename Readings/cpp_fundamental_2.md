@@ -619,6 +619,109 @@ int main(void)
 
 </details>
 
+- new 연산자의 역할
+  1. 메모리 공간의 할당
+  2. 생성자의 호출
+  3. 할당하고자 하는 자료형에 맞게 반환된 주소 값의 형 변환
+
+- new 연산자의 오버로딩은 위 3가지 항목 중 1번(메모리 공간의 할당)만 오버로딩할 수 있다. 나머지 두 가지 작업은 컴파일러에 의해서 진행되며 오버로딩이 불가능하다.
+
+```cpp
+// new 연산자의 오버로딩 함수는 반드시 void* 타입을 반환해야 하고, 매개변수 타입은 size_t이어야 한다.
+// 컴파일러에 의해서 필요한 메모리 공간의 크기가 바이트 단위로 계산되어 인자로 전달된다.
+// 아래 구현된 함수 몸체는 new 연산자를 오버로딩하지 않아도 수행되는 작업이기에 오버로딩을 하고자 한다면 그 이상의 일을 처리할 목적을 갖고 있어야 한다.
+void* operator new(size_t size)
+{
+    void* adr = new char[size];  // malloc() 함수로 대체할 수 있다.
+    return adr;
+}
+
+// new 연산자를 이용한 배열 할당 시 호출된다.
+void* operator new[](size_t size) { }
+```
+
+- delete 연산자 오버로딩
+
+```cpp
+// 아래 문장을 통해 객체의 소멸을 명령하면, 컴파일러는 먼저 ptr이 가리키는 객체의 소멸자를 호출한다. 이어서 아래의 형태로 정의된 함수에 ptr에 저장된 주소 값을 전달한다.
+delete ptr;
+
+// 소멸자는 오버로딩된 delete 함수가 호출되기 전에 호출되므로 오버로딩된 함수에서는 메모리 공간의 소멸을 책임져야 한다.
+void operator delete(void* adr)
+{
+    delete[] adr;  // free() 함수로 대체할 수 있다.
+}
+
+// delete 연산자를 이용한 배열 소멸 시 호출된다.
+void operator delete[](void* adr) { }
+```
+
+- operator new, operator delete 함수는 멤버함수 형태로 선인을 해도 static 함수로 간주되므로 객체 생성의 과정에서 호출이 가능한 것이다.
+
+<details><summary>ex</summary>
+
+```cpp
+#include <iostream>
+
+class Point
+{
+private:
+    int xpos, ypos;
+public:
+    Point(int x = 0, int y = 0) : xpos(x), ypos(y) { }
+    friend std::ostream& operator<<(std::ostream& os, const Point& pos);
+
+    ~Point()
+    {
+        std::cout << "Destruct : " << xpos << ", " << ypos << std::endl;
+    }
+
+    void* operator new(size_t size)
+    {
+        std::cout << "operator new : " << size << std::endl;
+        void* adr = new char[size];
+        return adr;
+    }
+
+    void* operator new[](size_t size)
+    {
+        std::cout << "operator new [] : " << size << std::endl;
+        void* adr = new char[size];
+        return adr;
+    }
+
+    void operator delete(void* adr)
+    {
+        std::cout << "operator delete ()" << std::endl;
+        delete[] (char*)adr;
+    }
+
+    void operator delete[](void* adr)
+    {
+        std::cout << "operator delete[] ()" << std::endl;
+        delete[] (char*)adr;
+    }
+};
+
+std::ostream& operator<<(std::ostream& os, const Point& pos)
+{
+    os << '[' << pos.xpos << ", " << pos.ypos << ']' << std::endl;
+    return os;
+}
+
+int main(void)
+{
+    Point* ptr = new Point(3,4);
+    Point* arr = new Point[3];
+    delete ptr;
+    delete[] arr;
+
+    return 0;
+}
+```
+
+</details>
+
 ## Reference
 
 - 윤성우, <열혈 C++ 프로그래밍>
