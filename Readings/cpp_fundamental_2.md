@@ -442,7 +442,6 @@ int main(void)
 
 ```cpp
 #include <iostream>
-#include <cstdlib>
 
 class BoundCheckIntArray
 {
@@ -471,17 +470,42 @@ public:
         return arr[idx];
     }
 
+    // const의 선언 유무도 오버로딩 조건에 해당한다. 참조값이 아닌 단순 값을 반환한다.
+    int operator[](int idx) const
+    {
+        if (idx < 0 || idx >= arrlen)
+        {
+            std::cout << "Array index out of bound exception" << std::endl;
+            exit(1);
+        }
+        return arr[idx];
+    }
+
+    int GetArrLen() const { return arrlen; }
+
     ~BoundCheckIntArray()
     {
         delete[] arr;
     }
 };
 
+void ShowAllData(const BoundCheckIntArray& ref)
+{
+    int len = ref.GetArrLen();
+    for (int idx = 0; idx < len; idx++)
+        std::cout << ref[idx] << std::endl;
+}
+
 int main(void)
 {
     BoundCheckIntArray arr(5);
     for(int i = 0; i < 5; i++)
         arr[i] = (i+1) * 11;
+
+    ShowAllData(arr);
+
+    std::cout << "***************" << std::endl;
+
     for(int i = 0; i < 6; i++)
         std::cout << arr[i] << std::endl;
     return 0;
