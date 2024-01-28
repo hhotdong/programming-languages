@@ -266,6 +266,49 @@ int main(void)
   
 </details>
 
+- 디폴트 대입 연산자
+  - 정의하지 않으면 디폴트 대입 연산자가 삽입된다.
+  - 복사 생성자와 마찬가지로 멤버 대 멤버 복사(얕은 복사)를 수행한다.
+  - 연산자 내에서 동적 할당을 한다면, 그리고 깊은 복사가 필요하다면 직접 정의해야 한다.
+
+<details><summary>ex1</summary>
+
+```cpp
+#include <iostream>
+
+class Monster
+{
+private:
+    int atk, hp;
+public:
+    Monster& operator=(const Monster& mon)
+    {
+        std::cout << "operator=()" << std::endl;
+        atk = mon.atk;
+        hp = mon.hp;
+        return *this;
+    }
+};
+
+int main(void)
+{
+    Monster mon1;
+    Monster mon2 = mon1;  // 선언과 동시에 초기화하는 경우 복사 생성자 호출
+    Monster mon3;         // 객체 생성(=선언 및 초기화 수행)
+    mon3 = mon2;          // 이미 생성된 객체 간 대입하는 경우 대입 연산자 호출
+    return 0;
+}
+```
+
+</details>
+
+<details><summary>ex1</summary>
+
+```cpp
+Monster& operator
+```
+
+</details>
 
 ## Reference
 
