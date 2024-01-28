@@ -514,6 +514,111 @@ int main(void)
 
 </details>
 
+- 객체의 저장을 위한 배열 클래스 정의
+
+<details><summary></summary>
+
+```cpp
+#include <iostream>
+#include <cstdlib>
+
+class Point
+{
+private:
+    int xpos, ypos;
+public:
+    Point(int x = 0, int y = 0) : xpos(x), ypos(y) { }
+    friend std::ostream& operator<<(std::ostream& os, const Point& pos);
+};
+
+std::ostream& operator<<(std::ostream& os, const Point& pos)
+{
+    os << '[' << pos.xpos << ", " << pos.ypos << ']' << std::endl;
+    return os;
+}
+
+typedef Point* POINT_PTR;  // 연산의 주 대상이 포인터인 경우, 별도의 자료형을 정의하는 게 좋다.
+
+//class BoundCheckPointArray
+class BoundCheckPointPtrArray
+{
+private:
+    /*  배열에 객체를 저장하는 방식
+    Point* arr;
+    int arrlen;
+    BoundCheckPointArray(const BoundCheckPointArray& arr) { }
+    BoundCheckPointArray& operator=(const BoundCheckPointArray& arr) { }
+    */
+    
+    // 배열에 객체의 주소를 저장하는 방식
+    POINT_PTR* arr;
+    int arrlen;
+    BoundCheckPointPtrArray(const BoundCheckPointPtrArray& arr) { }
+    BoundCheckPointPtrArray& operator=(const BoundCheckPointPtrArray& arr) { }
+public:
+    //BoundCheckPointArray(int len) : arrlen(len)
+    BoundCheckPointPtrArray(int len) : arrlen(len)
+    {
+        //arr = new Point[len];  // Point클래스에 정의된 생성자에 의해 x, y값이 0으로 초기화된다.
+        arr = new POINT_PTR[len];
+    }
+    
+    //Point& operator[](int idx)
+    POINT_PTR& operator[](int idx)
+    {
+        if (idx < 0 || idx >= arrlen)
+        {
+            std::cout << "Array index out of bound exception" << std::endl;
+            exit(1);
+        }
+        return arr[idx];
+    }
+    
+    //Point operator[](int idx) const
+    POINT_PTR operator[](int idx) const
+    {
+        if (idx < 0 || idx >= arrlen)
+        {
+            std::cout << "Array index out of bound exception" << std::endl;
+            exit(1);
+        }
+        return arr[idx];
+    }
+    
+    int GetArrLen() const { return arrlen; }
+    
+    //~BoundCheckPointArray() { delete[] arr; }
+    ~BoundCheckPointPtrArray() { delete[] arr; }
+};
+
+int main(void)
+{
+    /* 배열에 객체를 저장하는 방식
+    BoundCheckPointArray arr(3);
+    arr[0] = Point(3,4);  // 임시객체 생성 후 디폴트 대입 연산자를 호출하는 방식으로 배열요소를 초기화하고 있다.
+    arr[1] = Point(5,6);
+    arr[2] = Point(7,8);
+    for (int i = 0; i < arr.GetArrLen(); i++)
+        std::cout << arr[i];
+    */
+
+    // 배열에 객체의 주소를 저장하는 방식
+    BoundCheckPointPtrArray arr(3);
+    arr[0] = new Point(3,4);  // 객체의 주소 값을 저장하는 경우, 깊은 복사냐 얕은 복사냐 하는 문제를 신경 쓰지 않아도 된다.
+    arr[1] = new Point(5,6);
+    arr[2] = new Point(7,8);
+    for (int i = 0; i < arr.GetArrLen(); i++)
+        std::cout << *(arr[i]);
+    delete arr[0];
+    delete arr[1];
+    delete arr[2];
+
+    return 0;
+}
+```
+
+</details>
+
 ## Reference
 
 - 윤성우, <열혈 C++ 프로그래밍>
