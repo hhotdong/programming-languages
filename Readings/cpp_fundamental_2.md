@@ -773,6 +773,64 @@ int main(void)
 
 </details>
 
+- 스마트 포인터: 포인터 처럼 동작하는 객체. 감싸고 있는 객체의 소멸을 위한 delete 연산을 자동으로 수행한다.
+
+<details><summary>ex</summary>
+
+```cpp
+#include <iostream>
+
+class Point
+{
+private:
+    int xpos, ypos;
+public:
+    Point(int x = 0, int y = 0) : xpos(x), ypos(y) { std::cout << "Point 객체 생성" << std::endl; }
+    ~Point() { std::cout << "Point 객체 소멸" << std::endl; }
+    void SetPos(int x, int y)
+    {
+        xpos = x;
+        ypos = y;
+    }
+    friend std::ostream& operator<<(std::ostream& os, const Point& pos);
+};
+
+std::ostream& operator<<(std::ostream& os, const Point& pos)
+{
+    os << '[' << pos.xpos << ", " << pos.ypos << ']' << std::endl;
+    return os;
+}
+
+class SmartPtr
+{
+private:
+    Point* posptr;
+public:
+    SmartPtr(Point* ptr) : posptr(ptr) { }
+    Point& operator*() const { return *posptr; }
+    Point* operator->() const { return posptr; }
+    ~SmartPtr() { delete posptr; }  // 생성자에서 동적 할당을 하지 않았음에도 소멸자에서 delete 연산을 수행하고 있다. 여기에는 생성자의 인자로 전달되는 주소 값은 new 연산에 의해 동적 할당된 객체의 주소 값이라는 가정이 포함되어 있다.
+};
+
+int main(void)
+{
+    SmartPtr sptr1(new Point(1,2));
+    SmartPtr sptr2(new Point(2,3));
+    SmartPtr sptr3(new Point(4,5));
+    std::cout << (*sptr1);
+    std::cout << *sptr2;
+    std::cout << *sptr3;
+    sptr1->SetPos(10,20);
+    sptr2->SetPos(30,40);
+    sptr3->SetPos(50,60);
+    std::cout << *sptr1;
+    std::cout << *sptr2;
+    std::cout << *sptr3;
+    return 0;
+}
+```
+
+</details>
 
 ## Reference
 
