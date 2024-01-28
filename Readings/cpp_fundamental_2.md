@@ -162,7 +162,7 @@ int main(void)
 
 - cin, cout, endl
 
-<details><summary>ex1</summary>
+<details><summary>ex</summary>
 
 ```cpp
 #include <iostream>
@@ -229,7 +229,7 @@ int main(void)
   - ostream은 이름공간 std 안에 선언되어 있다.
   - 멤버함수를 통해 오버로딩을 하려면 ostream 클래스를 수정해야 하는데 이는 불가능하므로 전역함수 방식을 이용한다.
 
-<details><summary>ex2</summary>
+<details><summary>ex</summary>
 
 ```cpp
 #include <iostream>
