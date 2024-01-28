@@ -162,7 +162,7 @@ int main(void)
 
 - cin, cout, endl
 
-<details><summary>ex</summary>
+<details><summary>ex1</summary>
 
 ```cpp
 #include <iostream>
@@ -224,6 +224,47 @@ int main(void)
 
 </details>
 
+- 사용자 정의 타입에 대한 <<, >> 연산자 오버로딩을 위한 전역함수 오버로딩
+  - cout은 ostream 클래스의 객체이다.
+  - ostream은 이름공간 std 안에 선언되어 있다.
+  - 멤버함수를 통해 오버로딩을 하려면 ostream 클래스를 수정해야 하는데 이는 불가능하므로 전역함수 방식을 이용한다.
+
+<details><summary>ex2</summary>
+
+```cpp
+#include <iostream>
+
+class Point
+{
+private:
+    int xpos, ypos;
+public:
+    Point(int x = 0, int y = 0) : xpos(x), ypos(y) { }
+    void ShowPosition() const
+    {
+        std::cout << '[' << xpos << ", " << ypos << ']' << std::endl;
+    }
+    friend std::ostream& operator<<(std::ostream&, const Point&);
+};
+
+std::ostream& operator<<(std::ostream& ostm, const Point& pos)
+{
+    ostm << '[' << pos.xpos << ", " << pos.ypos << ']' << std::endl;
+    return ostm;
+}
+
+int main(void)
+{
+    Point pos1(1, 3);
+    std::cout << pos1;
+    Point pos2(101, 303);
+    std::cout << pos2;
+    
+    return 0;
+}
+```
+  
+</details>
 
 
 ## Reference
