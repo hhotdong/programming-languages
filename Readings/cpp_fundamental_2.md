@@ -449,6 +449,11 @@ class BoundCheckIntArray
 private:
     int * arr;
     int arrlen;
+
+    // 배열은 저장소의 일종이고, 저장소에 저장된 데이터는 '유일성'이 보장돼야 하기 때문에 대부분의 경우 저장소의 복사는 불필요하거나 잘못된 일로 간주된다.
+    // 따라서 깊은 복사가 진행되도록 클래스를 정의할 것이 아니라, 복사 생성자와 대입 연산자를 private 멤버로 둠으로써 복사와 대입을 원천적으로 막는 것이 좋은 선택이 되기도 한다.
+    BoundCheckIntArray(const BoundCheckIntArray& ref) { }
+    BoundCheckIntArray& operator=(const BoundCheckIntArray& ref) { }
 public:
     BoundCheckIntArray(int len) : arrlen(len)
     {
