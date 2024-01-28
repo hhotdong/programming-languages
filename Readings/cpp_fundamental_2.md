@@ -626,6 +626,8 @@ int main(void)
 
 - new 연산자의 오버로딩은 위 3가지 항목 중 1번(메모리 공간의 할당)만 오버로딩할 수 있다. 나머지 두 가지 작업은 컴파일러에 의해서 진행되며 오버로딩이 불가능하다.
 
+<details><summary>ex</summary>
+
 ```cpp
 // new 연산자의 오버로딩 함수는 반드시 void* 타입을 반환해야 하고, 매개변수 타입은 size_t이어야 한다.
 // 컴파일러에 의해서 필요한 메모리 공간의 크기가 바이트 단위로 계산되어 인자로 전달된다.
@@ -640,7 +642,11 @@ void* operator new(size_t size)
 void* operator new[](size_t size) { }
 ```
 
+</details>
+
 - delete 연산자 오버로딩
+
+<details><summary>ex</summary>
 
 ```cpp
 // 아래 문장을 통해 객체의 소멸을 명령하면, 컴파일러는 먼저 ptr이 가리키는 객체의 소멸자를 호출한다. 이어서 아래의 형태로 정의된 함수에 ptr에 저장된 주소 값을 전달한다.
@@ -655,6 +661,8 @@ void operator delete(void* adr)
 // delete 연산자를 이용한 배열 소멸 시 호출된다.
 void operator delete[](void* adr) { }
 ```
+
+</details>
 
 - operator new, operator delete 함수는 멤버함수 형태로 선인을 해도 static 함수로 간주되므로 객체 생성의 과정에서 호출이 가능한 것이다.
 
