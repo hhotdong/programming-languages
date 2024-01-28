@@ -270,6 +270,7 @@ int main(void)
   - 정의하지 않으면 디폴트 대입 연산자가 삽입된다.
   - 복사 생성자와 마찬가지로 멤버 대 멤버 복사(얕은 복사)를 수행한다.
   - 연산자 내에서 동적 할당을 한다면, 그리고 깊은 복사가 필요하다면 직접 정의해야 한다.
+  - 객체 간의 대입연산은 대입 연산자 오버로딩을 통한 함수의 호출이라는 점에서 C언어의 구조체 변수 간 대입연산과 차이가 있다.
 
 <details><summary>ex1</summary>
 
@@ -302,10 +303,64 @@ int main(void)
 
 </details>
 
+- 상속 구조에서의 대입 연산자 호출
+  - 대입 연산자는 생성자가 아니다. 따라서 유도 클래스의 생성자에는 아무런 명시를 하지 않아도 기초 클래스의 생성자가 호출되지만, 유도 클래스의 대입 연산자에는 아무런 명시를 하지 않으면, 기초 클래스의 대입 연산자가 호출되지 않는다.
+
 <details><summary>ex1</summary>
 
 ```cpp
-Monster& operator
+#include <iostream>
+
+class First
+{
+private:
+    int num1, num2;
+public:
+    First(int n1 = 0, int n2 = 0) : num1(n1), num2(n2) { }
+    void ShowData() { std::cout << num1 << ", " << num2 << std::endl; }
+
+    First& operator=(const First& ref)
+    {
+        std::cout << "First& operator=()" << std::endl;
+        num1 = ref.num1;
+        num2 = ref.num2;
+        return *this;
+    }
+};
+
+class Second : public First
+{
+private: 
+    int num3, num4;
+public:
+    Second(int n1 = 0, int n2 = 0, int n3 = 0, int n4 = 0) : First(n1, n2), num3(n3), num4(n4) { }
+    void ShowData()
+    {
+        First::ShowData();
+        std::cout << num3 << ", " << num4 << std::endl;
+    }
+
+    // 유도 클래스의 대입 연산자를 정의하지 않으면 디폴트 대입 연산자가 호출되며 디폴트 대입 연산자는 기초 클래스의 대입 연산자까지 호출한다.
+    Second& operator=(const Second& ref)
+    {
+        // 대입 연산자를 오버로드할 때 기초 클래스의 대입 연산자도 명시적으로 호출해야 한다.
+        std::cout << "Second& operator=()" << std::endl;
+        First::operator=(ref);
+        num3 = ref.num3;
+        num4 = ref.num4;
+        return *this;
+    }
+};
+
+
+int main(void)
+{
+    Second ssrc(111, 222, 333, 444);
+    Second scpy(0, 0, 0, 0);
+    scpy = ssrc;
+    scpy.ShowData();
+    return 0;
+}
 ```
 
 </details>
