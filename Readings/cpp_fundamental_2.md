@@ -516,7 +516,7 @@ int main(void)
 
 - 객체의 저장을 위한 배열 클래스 정의
 
-<details><summary></summary>
+<details><summary>ex</summary>
 
 ```cpp
 #include <iostream>
