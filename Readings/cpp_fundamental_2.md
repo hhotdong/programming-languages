@@ -416,6 +416,74 @@ int main(void)
 
 </details>
 
+- 배열의 인덱스 연산자 오버로딩
+  - C, C++의 기본 배열은 경계 검사를 하지 않는 특성이 있다.
+<details><summary>ex</summary>
+
+```cpp
+#include <iostream>
+
+int main(void)
+{
+    int arr[3] = { 1, 2, 3 };
+    std::cout << arr[-1];  // 'arr의 주소 + sizeof(int) * -1'의 위치에 접근
+    std::cout << arr[-2];  // 'arr의 주소 + sizeof(int) * -2'의 위치에 접근
+    std::cout << arr[3];
+    std::cout << arr[4];
+    return 0;
+}
+```
+
+</details>
+
+- 경계 검사를 수행하는 배열 클래스
+  
+<details><summary>ex</summary>
+
+```cpp
+#include <iostream>
+#include <cstdlib>
+
+class BoundCheckIntArray
+{
+private:
+    int * arr;
+    int arrlen;
+public:
+    BoundCheckIntArray(int len) : arrlen(len)
+    {
+        arr = new int[len];
+    }
+
+    int& operator[](int idx)
+    {
+        if (idx < 0 || idx >= arrlen)
+        {
+            std::cout << "Array index out of bound exception" << std::endl;
+            exit(1);
+        }
+        return arr[idx];
+    }
+
+    ~BoundCheckIntArray()
+    {
+        delete[] arr;
+    }
+};
+
+int main(void)
+{
+    BoundCheckIntArray arr(5);
+    for(int i = 0; i < 5; i++)
+        arr[i] = (i+1) * 11;
+    for(int i = 0; i < 6; i++)
+        std::cout << arr[i] << std::endl;
+    return 0;
+}
+```
+
+</details>
+
 ## Reference
 
 - 윤성우, <열혈 C++ 프로그래밍>
