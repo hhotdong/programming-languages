@@ -730,6 +730,50 @@ int main(void)
 
 </details>
 
+- 포인터 연산자 오버로딩
+
+<details><summary>ex</summary>
+
+```cpp
+#include <iostream>
+
+class Number
+{
+private:
+    int num;
+public:
+    Number(int n) : num(n) { }
+    void ShowData() { std::cout << num << std::endl; }
+
+    // 반환되는 주소 값은 private으로 선언된 변수의 주소 값과 동일하므로 외부에서 private으로 선언된 멤버변수 num의 값을 변경할 수 있다. 이는 연산자 오버로딩을 통해 포인터처럼 행동이 가능함을 보이기 위한 예제일 뿐이므로 실제로는 이와 같이 구현해서는 안 된다.
+    Number* operator->()
+    {
+        return this;
+    }
+
+    Number& operator*()
+    {
+        return *this;
+    }
+};
+
+int main(void)
+{
+    Number num(20);
+    num.ShowData();
+
+    // 객체 num이 포인터 변수인 것처럼 연산문이 구성되었다. 이는 * 연산자의 오버로딩 결과이다.
+    (*num) = 30;      // '(num.operator*()) = 30;'으로 해석된다.
+    num->ShowData();  // 'num.operator->() ShowData();'으로 해석된다. 이 때, -> 연산자의 반환값은 주소 값이므로 문법적으로 성립하도록 하기 위해 최종적으로는 -> 연산자를 하나 더 추가하여 'num.operator->()->ShowData();'으로 해석된다.
+    (*num).ShowData();
+
+    return 0;
+}
+```
+
+</details>
+
+
 ## Reference
 
 - 윤성우, <열혈 C++ 프로그래밍>
