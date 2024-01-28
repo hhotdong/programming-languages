@@ -114,6 +114,116 @@ int main(void)
   - 배열 접근 연산자 '[]'
   - 멤버 접근을 위한 포인터 연산자 '->'
 
+- 교환법칙 문제의 해결을 위한 전역함수 오버로딩
+
+<details><summary>ex</summary>
+
+```cpp
+#include <iostream>
+
+class Point
+{
+private:
+    int xpos, ypos;
+public:
+    Point(int x = 0, int y = 0) : xpos(x), ypos(y) { }
+    void ShowPosition() const
+    {
+        std::cout << '[' << xpos << ", " << ypos << ']' << std::endl;
+    }
+    Point operator*(int times)
+    {
+        return Point(xpos * times, ypos * times);
+    }
+    friend Point operator*(int times, Point& pos);
+};
+
+Point operator*(int times, Point& pos)
+{
+    return pos * times;
+}
+
+int main(void)
+{
+    Point pos(1, 2);
+    Point cpy;
+
+    cpy = 3 * pos;
+    cpy.ShowPosition();
+
+    cpy = 2 * pos * 3;
+    cpy.ShowPosition();
+
+    return 0;
+}
+```
+
+</details>
+
+- cin, cout, endl
+
+<details><summary>ex</summary>
+
+```cpp
+#include <iostream>
+
+namespace mystd
+{
+    using namespace std;  // mystd 내에서 지역적으로 이뤄진 선언이므로 이 지역 내에서만 유효하다.
+
+    class ostream
+    {
+    public:
+        ostream& operator<< (const char* str)
+        {
+            printf("%s", str);
+            return *this;
+        }
+        ostream& operator<< (char str)
+        {
+            printf("%c", str);
+            return *this;
+        }
+        ostream& operator<< (int num)
+        {
+            printf("%d", num);
+            return *this;
+        }
+        ostream& operator<< (double e)
+        {
+            printf("%g", e);
+            return *this;
+        }
+        ostream& operator<< (ostream& (*fp)(ostream& ostm))
+        {
+            fp(*this);
+            return *this;
+        }
+    };
+
+    ostream& endl(ostream& ostm)  // endl은 함수의 이름이다. 버퍼를 비우는 작업도 함께 수행한다.
+    {
+        ostm << '\n';
+        fflush(stdout);
+        return ostm;
+    }
+
+    ostream cout;  // cout은 ostream 클래스의 객체 이름이다.
+}
+
+int main(void)
+{
+    // main()함수 내에서는 cout, endl이 이름공간 mystd 내에 선언된 것을 의미한다.
+    using mystd::cout;
+    using mystd::endl;
+    cout << "Simple String" << endl << 3.14 << endl << 123 << endl;
+
+    return 0;
+}
+```
+
+</details>
+
 
 
 ## Reference
