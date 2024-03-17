@@ -1,5 +1,7 @@
 ## 커스텀 문자열
 
+<details><summary>ex</summary>
+
 ```cpp
 class MyString
 {
@@ -83,7 +85,11 @@ private:
 }
 ```
 
+</details>
+
 ## Sparse polynomial
+
+<details><summary>ex</summary>
 
 ```cpp
 SparsePolynomial SparsePolynomial::Add(const SparsePolynomial& poly)
@@ -130,6 +136,8 @@ SparsePolynomial SparsePolynomial::Add(const SparsePolynomial& poly)
     return tmp;
 }
 ```
+
+</details>
 
 # Reference
 
