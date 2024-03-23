@@ -1,0 +1,1 @@
+- [Modern C++ class members and initializations the right way](https://medium.com/pranayaggarwal25/using-modern-class-members-and-initializations-c11e931c3ba)
