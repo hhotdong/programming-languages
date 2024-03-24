@@ -139,6 +139,20 @@ SparsePolynomial SparsePolynomial::Add(const SparsePolynomial& poly)
 
 </details>
 
+- 배열 기반의 Stack에서 Pop() 함수를 호출하는 경우 인덱스만 감소하는 방식으로 구현할 수 있다.
+
+<details><summary>ex</summary>
+
+```cpp
+void Pop()
+{
+    top_--;
+    // 필요한 경우 소멸자를 수동으로 호출.
+    // stack_[top_--].~T();
+}
+```
+</details>
+
 # Reference
 
 - 홍정모 교수님, <자료구조 압축코스>
