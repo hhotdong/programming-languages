@@ -1,4 +1,12 @@
+## Definition
+
+> "(...)specifies that the value of a variable or function can appear in constant expressions.(...) The constexpr specifier declares that it is possible to
+> evaluate the value of the function or variable at compile time. Such variables and functions can then be used where only compile time constant expressions are
+> allowed (provided that appropriate function arguments are given).(...)"[^definition]
+
 - C++ 11에서 도입된 키워드로서 객체나 함수의 반환값을 컴파일 타임에 알 수 있다는 의미를 지닌다.
+
+## Notes
 
 - 컴파일러가 컴파일 타임에 어떠한 식의 값을 결정할 수 있다면 해당 식을 상수식(Constant expression)으로, 그리고 이러한 상수식들 중에서 값이 정수인 것을 정수 상수식(Integral constant expression)으로 표현한다.
 
@@ -50,13 +58,13 @@ int main() {
   constexpr int ten = 10;
   A<Factorial(ten)> b;  // OK
 
-  std::cout << Factorial(num) << std::endl;  // OK. constexpr함수에 인자로 컴파일 타임 상수가 아닌 값을 전달하면 일반 함수처럼 동작함.
+  std::cout << Factorial(num) << std::endl;  // OK. constexpr함수에 인자로 컴파일 타임 상수가 아닌 값을 전달하거나 반환값이 컴파일 타임에 사용되지 않는다면 일반 함수처럼 동작함.
 }
 ```
 - constexpr 함수 몸체 구현 시 제약조건
     - goto문 사용 불가
     - try문 사용 불가(C++ 20 부터 가능하게 변경)
-    - 리터럴 타입이 아닌 변수 정의 불가
+    - [리터럴 타입](https://en.cppreference.com/w/cpp/named_req/LiteralType)이 아닌 변수 정의 불가
     - 초기화 되지 않는 변수 정의 불가
     - 실행 중간에 constexpr이 아닌 함수 호출 불가
 
@@ -123,4 +131,9 @@ int main() {
 
 ### References
 
+[^definition]: https://en.cppreference.com/w/cpp/language/constexpr
+
 - [모두의 코드](https://modoocode.com/293)
+- [cppreference.com](https://en.cppreference.com/w/cpp/language/constexpr)
+- [MSDN](https://learn.microsoft.com/en-us/cpp/cpp/constexpr-cpp?view=msvc-170)
+- [GeeksforGeeks](https://www.geeksforgeeks.org/understanding-constexper-specifier-in-cpp/)
