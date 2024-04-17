@@ -1,2 +1,3 @@
 # c-cpp-study
-Learning C, CPP.
+
+Learning c and c++.
