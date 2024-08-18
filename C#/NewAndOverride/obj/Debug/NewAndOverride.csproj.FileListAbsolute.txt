@@ -1,0 +1,6 @@
+/Users/leedongju/Desktop/HHOT/Csharp-study/NewAndOverride/bin/Debug/NewAndOverride.exe
+/Users/leedongju/Desktop/HHOT/Csharp-study/NewAndOverride/bin/Debug/NewAndOverride.pdb
+/Users/leedongju/Desktop/HHOT/Csharp-study/NewAndOverride/obj/Debug/NewAndOverride.csproj.AssemblyReference.cache
+/Users/leedongju/Desktop/HHOT/Csharp-study/NewAndOverride/obj/Debug/NewAndOverride.csproj.CoreCompileInputs.cache
+/Users/leedongju/Desktop/HHOT/Csharp-study/NewAndOverride/obj/Debug/NewAndOverride.exe
+/Users/leedongju/Desktop/HHOT/Csharp-study/NewAndOverride/obj/Debug/NewAndOverride.pdb
