@@ -7,7 +7,7 @@
   
 </details>
 
-<details><summary>std::vector example</summary>
+<details><summary>code example</summary>
 
 ```cpp
 // Credit: The Cherno, https://youtu.be/PocJ5jXv8No?feature=shared
