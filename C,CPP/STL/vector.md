@@ -114,6 +114,7 @@ int main()
       std::vector<Data> vector;
       
       // If possible, it's better to use std::array because it's stack allocated while std::vector is heap allocated.
+      // https://www.youtube.com/watch?v=wJ1L2nSIV1s
       // std::array<Data> array; 
       
       // If you can estiamte the capacity needed, let it reserved so that vector avoids copying.
